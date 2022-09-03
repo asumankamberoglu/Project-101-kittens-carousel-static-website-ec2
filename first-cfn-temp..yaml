@@ -1,0 +1,50 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: |
+  This temp launches an ec2 instance with a SG which enables SSH.
+  
+Resources:
+  CFNInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-05fa00d4c63e32376
+      InstanceType: t2.micro
+      KeyName: firstkey # Please use your key pair name without pem.
+      SecurityGroups:
+        - !Ref CFNSecGroup
+      Tags:
+        - Key: Name
+          Value: First-CFN-Instance
+      UserData: 
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          yum update -y
+          yum install -y httpd
+          systemctl start httpd
+          yum install git -y 
+          cd /home/ec2-user
+          git clone https://github.com/asumankamberoglu/Project-101-kittens-carousel-static-website-ec2.git
+          cd
+          cd /var/www/html
+          chmod -R 777 /var/www/html/
+          cp /home/ec2-user/Project-101-kittens-carousel-static-website-ec2/static-web/static-web/* .
+          systemctl restart httpd
+          systemctl enable httpd 
+  
+  CFNSecGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enables SSH for CFN Instance # Required
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+      
