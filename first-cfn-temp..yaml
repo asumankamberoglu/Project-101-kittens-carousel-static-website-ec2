@@ -8,7 +8,7 @@ Resources:
     Properties:
       ImageId: ami-05fa00d4c63e32376
       InstanceType: t2.micro
-      KeyName: firstkey # Please use your key pair name without pem.
+      KeyName: asuman # Please use your key pair name without pem.
       SecurityGroups:
         - !Ref CFNSecGroup
       Tags:
@@ -26,14 +26,14 @@ Resources:
           cd
           cd /var/www/html
           chmod -R 777 /var/www/html/
-          cp /home/ec2-user/Project-101-kittens-carousel-static-website-ec2/static-web/static-web/* .
+          cp /home/ec2-user/Project-101-kittens-carousel-static-website-ec2/static-web/* .
           systemctl restart httpd
           systemctl enable httpd 
   
   CFNSecGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: Enables SSH for CFN Instance # Required
+      GroupDescription: Enables SSH + HTTP + HTTPS for CFN Instance # Required
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 22
